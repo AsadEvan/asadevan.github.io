@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asad Ullah Evan — Red Team &amp; Offensive Security</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#131313;
+    --panel:#1B1B1B;
+    --panel-2:#202020;
+    --border:#2C2C2C;
+    --text:#F2F2F2;
+    --muted:#8A8A8A;
+    --green:#2ED573;
+    --green-dim:rgba(46,213,115,0.12);
+    --display:'Poppins', sans-serif;
+    --sans:'Inter', sans-serif;
+    --mono:'JetBrains Mono', monospace;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){ html{ scroll-behavior:auto; } }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans); line-height:1.65; }
+  a{ color:inherit; text-decoration:none; }
+  ::selection{ background:var(--green); color:#0E0E0E; }
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 24px; }
+
+  /* NAV */
+  nav.top{ position:sticky; top:0; z-index:80; background:rgba(19,19,19,0.9); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); }
+  .nav-inner{ max-width:1080px; margin:0 auto; padding:18px 24px; display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; }
+  .logo{ font-family:var(--display); font-weight:700; font-size:16px; }
+  .logo b{ font-weight:500; color:var(--muted); }
+  .nav-links{ display:flex; gap:24px; flex-wrap:wrap; }
+  .nav-links a{ font-size:12.5px; color:var(--muted); font-weight:500; text-transform:uppercase; letter-spacing:0.03em; }
+  .nav-links a:hover{ color:var(--text); }
+  @media (max-width:820px){ .nav-links{ display:none; } }
+
+  /* HERO CARD (mimics the browser-mockup card in the reference) */
+  .hero-wrap{ padding:60px 0 60px; }
+  .hero-card{ background:var(--panel); border:1px solid var(--border); border-radius:18px; padding:44px 40px; position:relative; overflow:hidden; }
+  @media (max-width:700px){ .hero-card{ padding:30px 22px; } }
+  .hero-grid{ display:grid; grid-template-columns:1fr 260px; gap:36px; align-items:center; }
+  @media (max-width:760px){ .hero-grid{ grid-template-columns:1fr; } }
+
+  .role-pill{ display:inline-block; font-family:var(--mono); font-size:11px; font-weight:600; background:var(--green); color:#0E0E0E; padding:5px 12px; border-radius:5px; margin-bottom:20px; }
+  .hero-card h1{ font-family:var(--display); font-weight:700; font-size:clamp(26px,4vw,36px); line-height:1.25; }
+  .hero-card .desc{ color:var(--muted); font-size:13.8px; margin-top:16px; max-width:48ch; }
+  .lets-chat{ display:inline-flex; align-items:center; gap:6px; font-family:var(--mono); font-size:12.5px; color:var(--green); font-weight:700; margin-top:20px; text-transform:uppercase; letter-spacing:0.04em; }
+  .lets-chat:hover{ text-decoration:underline; }
+
+  .hero-stats{ display:flex; gap:40px; margin-top:34px; }
+  .hero-stats .stat .num{ font-family:var(--display); font-weight:800; font-size:26px; }
+  .hero-stats .stat .lbl{ font-family:var(--mono); font-size:9.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em; margin-top:2px; }
+
+  /* PHOTO SLOT (hoodie-style silhouette blob) */
+  .photo-slot{ position:relative; display:flex; align-items:center; justify-content:center; }
+  .photo-circle{
+    width:100%; max-width:230px; aspect-ratio:1/1; border-radius:50%;
+    background:radial-gradient(circle at 50% 30%, #262626, #191919 70%); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;
+  }
+  .photo-circle svg{ width:82px; height:82px; opacity:0.22; }
+  .photo-caption{ position:absolute; bottom:-22px; left:50%; transform:translateX(-50%); font-family:var(--mono); font-size:9px; color:var(--muted); white-space:nowrap; }
+  .tech-badge{ position:absolute; width:40px; height:40px; border-radius:50%; background:var(--panel-2); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; }
+  .tech-badge svg{ width:18px; height:18px; }
+  .tb-1{ top:6%; left:-6%; color:#3776AB; }
+  .tb-2{ bottom:10%; right:-8%; color:var(--green); }
+  @media (max-width:760px){ .tech-badge{ display:none; } }
+
+  section{ padding:56px 0; border-top:1px solid var(--border); }
+  .sec-eyebrow{ font-family:var(--mono); font-size:11px; font-weight:600; color:var(--green); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px; }
+  .sec-title{ font-family:var(--display); font-weight:700; font-size:clamp(21px,3vw,28px); max-width:34ch; margin-bottom:22px; }
+  .sec-sub{ color:var(--muted); font-size:13.5px; max-width:60ch; margin-top:-10px; margin-bottom:22px; }
+
+  /* SERVICE LIST + INTRO (mirrors reference's card list + bio layout) */
+  .services-grid{ display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:flex-start; }
+  @media (max-width:760px){ .services-grid{ grid-template-columns:1fr; } }
+  .svc-list{ display:flex; flex-direction:column; gap:12px; }
+  .svc-row{ background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:18px 20px; display:flex; justify-content:space-between; align-items:center; transition:border-color 0.2s ease, transform 0.2s ease; }
+  .svc-row:hover{ border-color:var(--green); transform:translateX(3px); }
+  .svc-row h3{ font-family:var(--display); font-weight:600; font-size:15px; margin-bottom:5px; }
+  .svc-row p{ color:var(--muted); font-size:12px; max-width:32ch; }
+  .svc-row .count{ font-family:var(--mono); font-size:10px; color:var(--green); margin-top:6px; }
+  .svc-icon{ width:34px; height:34px; border-radius:8px; background:var(--green-dim); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .svc-icon svg{ width:16px; height:16px; color:var(--green); }
+
+  .intro-block .tag{ font-family:var(--mono); font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px; }
+  .intro-block h3{ font-family:var(--display); font-weight:700; font-size:19px; margin-bottom:6px; }
+  .intro-block .quote{ font-style:italic; color:var(--muted); font-size:13px; margin-bottom:16px; }
+  .intro-block p{ color:#C9C9C9; font-size:13.5px; }
+  .intro-block p + p{ margin-top:10px; }
+  .intro-block b{ color:var(--text); }
+
+  /* STATS STRIP */
+  .stat-strip{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  @media (max-width:640px){ .stat-strip{ grid-template-columns:repeat(2,1fr); } }
+  .stat-cell{ background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:20px 14px; text-align:center; }
+  .stat-cell .num{ font-family:var(--display); font-weight:800; font-size:28px; color:var(--green); }
+  .stat-cell .lbl{ font-family:var(--mono); font-size:10px; color:var(--muted); margin-top:6px; text-transform:uppercase; letter-spacing:0.04em; }
+
+  /* CERTIFICATIONS */
+  .cert-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+  @media (max-width:760px){ .cert-grid{ grid-template-columns:repeat(2,1fr); } }
+  .cert-card{ background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:20px 14px; text-align:center; transition:border-color 0.2s ease, transform 0.2s ease; }
+  .cert-card:hover{ border-color:var(--green); transform:translateY(-3px); }
+  .cert-logo{ width:40px; height:40px; border-radius:9px; margin:0 auto 12px; background:#fff; display:flex; align-items:center; justify-content:center; padding:5px; }
+  .cert-logo img{ width:100%; height:100%; object-fit:contain; }
+  .cert-card .abbr{ font-family:var(--mono); font-weight:700; font-size:12.5px; color:var(--green); }
+  .cert-card .full{ font-size:10.8px; color:var(--muted); margin-top:5px; line-height:1.4; }
+  .cert-card .cid{ font-family:var(--mono); font-size:9px; color:var(--muted); margin-top:6px; }
+
+  /* SKILLS */
+  .skill-block{ margin-bottom:18px; }
+  .skill-block:last-child{ margin-bottom:0; }
+  .skill-block .tname{ font-family:var(--mono); font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px; }
+  .chip-row{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{ font-size:12px; padding:6px 12px; border-radius:8px; background:var(--panel); border:1px solid var(--border); color:#D2D2D2; }
+
+  /* EXPERIENCE */
+  .job-card{ background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:24px; margin-bottom:16px; }
+  .job-card:last-child{ margin-bottom:0; }
+  .job-meta{ font-family:var(--mono); font-size:11px; color:var(--muted); margin-bottom:10px; }
+  .job-meta b{ color:var(--green); }
+  .job-card h3{ font-family:var(--display); font-weight:700; font-size:16.5px; margin-bottom:10px; }
+  .job-card ul{ padding-left:18px; color:#C9C9C9; }
+  .job-card ul li{ margin-bottom:7px; font-size:13.3px; }
+  .job-card ul li::marker{ color:var(--green); }
+
+  /* DISCLOSURES */
+  .disc-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+  @media (max-width:600px){ .disc-grid{ grid-template-columns:1fr; } }
+  .disc-card{ display:flex; align-items:center; gap:12px; padding:15px 18px; background:var(--panel); border:1px solid var(--border); border-radius:12px; }
+  .disc-card img{ width:20px; height:20px; border-radius:5px; }
+  .disc-card .org{ font-weight:600; font-size:13.5px; }
+  .disc-card .note{ font-family:var(--mono); font-size:10px; color:var(--green); margin-top:2px; }
+
+  /* EDUCATION */
+  .edu-row{ display:flex; justify-content:space-between; gap:14px; padding:13px 0; border-bottom:1px solid var(--border); font-size:13.8px; flex-wrap:wrap; }
+  .edu-row:last-child{ border-bottom:none; }
+  .edu-row .school{ color:var(--muted); font-family:var(--mono); font-size:11px; }
+
+  /* CONTACT */
+  .contact-card{ background:var(--panel); border:1px solid var(--border); border-radius:18px; padding:48px 32px; text-align:center; }
+  .contact-card h2{ font-family:var(--display); font-weight:800; font-size:clamp(22px,3.6vw,30px); margin-bottom:14px; }
+  .contact-card p{ color:var(--muted); max-width:52ch; margin:0 auto 26px; font-size:14px; }
+  .contact-btn{ display:inline-block; font-family:var(--mono); font-size:12.5px; background:var(--green); color:#0E0E0E; padding:13px 26px; border-radius:8px; font-weight:700; }
+  .contact-btn:hover{ filter:brightness(1.08); }
+  .contact-note{ font-family:var(--mono); font-size:10.5px; color:var(--muted); margin-top:18px; }
+
+  footer{ text-align:center; padding:34px 0 16px; font-family:var(--mono); font-size:11px; color:var(--muted); }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <div class="nav-inner">
+    <div class="logo">Asad <b>Evan</b></div>
+    <div class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#certs">Certs</a>
+      <a href="#exp">Experience</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <div class="hero-wrap">
+    <div class="hero-card">
+      <div class="hero-grid">
+        <div>
+          <div class="role-pill">Red Team Operator</div>
+          <h1>Talk is cheap.<br>Show me the exploit.</h1>
+          <p class="desc">I break into banks, fintechs, and enterprise platforms for a living, legally, under scope, and I write it all up properly afterward.</p>
+          <a class="lets-chat" href="#contact">Let's Chat →</a>
+          <div class="hero-stats">
+            <div class="stat"><div class="num">4+</div><div class="lbl">Years Experience</div></div>
+            <div class="stat"><div class="num">30+</div><div class="lbl">Engagements Completed</div></div>
+          </div>
+        </div>
+        <div class="photo-slot">
+          <div class="tech-badge tb-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8 9h.01M8 15h.01M15 9h1M15 15h1"/></svg></div>
+          <div class="tech-badge tb-2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2 4 6v6c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V6l-8-4Z"/></svg></div>
+          <!-- PHOTO SPACE: replace the <svg> below with <img src="your-photo.jpg" alt="Asad Ullah Evan" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"> to add a real photo -->
+          <div class="photo-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+            <div class="photo-caption">Photo // 230x230</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section id="services">
+    <div class="sec-eyebrow">What I Do</div>
+    <h2 class="sec-title">Manual-first testing that proves real risk</h2>
+    <div class="services-grid">
+      <div class="svc-list">
+        <div class="svc-row">
+          <div><h3>Red Team</h3><p>Adversary simulation, privilege escalation, lateral movement</p><div class="count">30+ engagements</div></div>
+          <div class="svc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2 4 6v6c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V6l-8-4Z"/></svg></div>
+        </div>
+        <div class="svc-row">
+          <div><h3>VAPT</h3><p>Web, API, mobile, network, and Active Directory testing</p><div class="count">200+ assets</div></div>
+          <div class="svc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg></div>
+        </div>
+        <div class="svc-row">
+          <div><h3>Cloud Security</h3><p>Misconfiguration analysis across AWS and Azure</p><div class="count">Ongoing</div></div>
+          <div class="svc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 18a4 4 0 0 1-1-7.9A5 5 0 0 1 15 8a4.5 4.5 0 0 1 2 8.5"/></svg></div>
+        </div>
+      </div>
+      <div class="intro-block">
+        <div class="tag">Introduce</div>
+        <h3>Hello! I'm Asad Ullah Evan</h3>
+        <div class="quote">Every good pentest report starts with an even better attack story.</div>
+        <p>I'm a Red Team and penetration testing specialist with <b>4+ years</b> delivering VAPT engagements for banks, NBFIs, PSPs, PSOs, and fintech clients.</p>
+        <p>Currently <b>Executive Engineer, Security Operations</b> at EIC Limited, I lead offensive security assessments across web, API, mobile, Active Directory, cloud, and enterprise infrastructure, having delivered <b>30+ engagements</b> covering <b>200+ assets</b> to date. I hold <b>OSCP+, OSCP, CRT, CPSA, LPT, CPENT, and CEH</b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-eyebrow">Track Record</div>
+    <h2 class="sec-title">Numbers that matter</h2>
+    <div class="stat-strip">
+      <div class="stat-cell"><div class="num">4+</div><div class="lbl">Years Experience</div></div>
+      <div class="stat-cell"><div class="num">30+</div><div class="lbl">Engagements</div></div>
+      <div class="stat-cell"><div class="num">200+</div><div class="lbl">Assets Assessed</div></div>
+      <div class="stat-cell"><div class="num">7</div><div class="lbl">Certifications</div></div>
+    </div>
+  </section>
+
+  <section id="certs">
+    <div class="sec-eyebrow">Credentials</div>
+    <h2 class="sec-title">Certifications</h2>
+    <div class="cert-grid">
+      <div class="cert-card"><div class="cert-logo"><img src="https://logo.clearbit.com/offsec.com" alt="OffSec"></div><div class="abbr">OSCP+</div><div class="full">OffSec Certified Professional+</div><div class="cid">167627856</div></div>
+      <div class="cert-card"><div class="cert-logo"><img src="https://logo.clearbit.com/offsec.com" alt="OffSec"></div><div class="abbr">OSCP</div><div class="full">OffSec Certified Professional</div><div class="cid">167627660</div></div>
+      <div class="cert-card"><div class="cert-logo"><img src="https://logo.clearbit.com/crest-approved.org" alt="CREST"></div><div class="abbr">CRT</div><div class="full">CREST Registered Penetration Tester</div><div class="cid">4242340012</div></div>
+      <div class="cert-card"><div class="cert-logo"><img src="https://logo.clearbit.com/crest-approved.org" alt="CREST"></div><div class="abbr">CPSA</div><div class="full">CREST Practitioner Security Analyst</div><div class="cid">4242340012</div></div>
+      <div class="cert-card"><div class="cert-logo"><img src="https://logo.clearbit.com/eccouncil.org" alt="EC-Council"></div><div class="abbr">LPT</div><div class="full">Licensed Penetration Tester Master</div><div class="cid">ECC4981637205</div></div>
+      <div class="cert-card"><div class="cert-logo"><img src="https://logo.clearbit.com/eccouncil.org" alt="EC-Council"></div><div class="abbr">CPENT v2</div><div class="full">Certified Penetration Testing Professional</div><div class="cid">ECC4172850639</div></div>
+      <div class="cert-card"><div class="cert-logo"><img src="https://logo.clearbit.com/eccouncil.org" alt="EC-Council"></div><div class="abbr">CEH</div><div class="full">Certified Ethical Hacker</div><div class="cid">ECC4768130529</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-eyebrow">Capability</div>
+    <h2 class="sec-title">Skills &amp; tooling</h2>
+    <div class="skill-block">
+      <div class="tname">Domains Tested</div>
+      <div class="chip-row"><span class="chip">Web Applications</span><span class="chip">APIs</span><span class="chip">Mobile Apps</span><span class="chip">Active Directory</span><span class="chip">Cloud (AWS/Azure)</span><span class="chip">Network Infrastructure</span></div>
+    </div>
+    <div class="skill-block">
+      <div class="tname">Red Team Tradecraft</div>
+      <div class="chip-row"><span class="chip">Initial Access</span><span class="chip">Privilege Escalation</span><span class="chip">Lateral Movement</span><span class="chip">Persistence</span><span class="chip">Post-Exploitation</span></div>
+    </div>
+    <div class="skill-block">
+      <div class="tname">Frameworks &amp; Tooling</div>
+      <div class="chip-row"><span class="chip">OWASP Top 10</span><span class="chip">PTES</span><span class="chip">MITRE ATT&amp;CK</span><span class="chip">CVSS v3/v4</span><span class="chip">Burp Suite Pro</span><span class="chip">Nmap</span><span class="chip">Metasploit</span><span class="chip">BloodHound</span></div>
+    </div>
+    <div class="skill-block">
+      <div class="tname">Languages &amp; Platforms</div>
+      <div class="chip-row"><span class="chip">Python</span><span class="chip">Bash</span><span class="chip">PowerShell</span><span class="chip">Linux</span><span class="chip">AWS</span><span class="chip">Azure</span></div>
+    </div>
+  </section>
+
+  <section id="exp">
+    <div class="sec-eyebrow">Experience</div>
+    <h2 class="sec-title">Where the work has happened</h2>
+    <div class="job-card">
+      <div class="job-meta"><b>EIC Limited</b> · May 2024 — Present · Dhaka, BD</div>
+      <h3>Executive Engineer, Security Operations</h3>
+      <ul>
+        <li>Leads end-to-end VAPT across web, API, mobile, Active Directory, cloud, and enterprise infrastructure for banking, fintech, and enterprise clients.</li>
+        <li>Delivered 30+ VAPT and Red Team engagements covering 200+ assets for 20+ client organizations.</li>
+        <li>Runs Red Team operations mapped to MITRE ATT&amp;CK: initial compromise, privilege escalation, lateral movement, persistence, post-exploitation.</li>
+        <li>Produces technical and executive-level reports aligned to OWASP, PTES, and CVSS, supporting PCI DSS compliance.</li>
+        <li>Mentors junior testers and leads scoping, remediation validation, and methodology improvement.</li>
+      </ul>
+    </div>
+    <div class="job-card">
+      <div class="job-meta"><b>HAMKO Group Ltd.</b> · Nov 2022 — Apr 2024 · Dhaka, BD</div>
+      <h3>Assistant Network Engineer</h3>
+      <ul>
+        <li>Diagnosed and resolved hardware, OS, and network issues; administered endpoint protection and system hardening.</li>
+        <li>Configured MikroTik routers, LAN/WAN, DHCP, NAT, firewall rules, VPNs, and wireless infrastructure.</li>
+        <li>Managed IT asset lifecycle, vendor coordination, and backup and recovery processes.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-eyebrow">Recognition</div>
+    <h2 class="sec-title">Bug bounty &amp; disclosure</h2>
+    <div class="disc-grid">
+      <div class="disc-card"><img src="https://www.google.com/s2/favicons?domain=oracle.com&sz=64" alt=""><div><div class="org">Oracle</div><div class="note">Acknowledged</div></div></div>
+      <div class="disc-card"><img src="https://www.google.com/s2/favicons?domain=unicef.org&sz=64" alt=""><div><div class="org">UNICEF</div><div class="note">Acknowledged</div></div></div>
+      <div class="disc-card"><img src="https://www.google.com/s2/favicons?domain=who.int&sz=64" alt=""><div><div class="org">World Health Organization</div><div class="note">Acknowledged</div></div></div>
+      <div class="disc-card"><img src="https://www.google.com/s2/favicons?domain=bt.com&sz=64" alt=""><div><div class="org">BT Group</div><div class="note">Rewarded</div></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-eyebrow">Academics</div>
+    <h2 class="sec-title">Education</h2>
+    <div class="edu-row"><div>M.Sc. in Computer Science and Engineering</div><div class="school">Jahangirnagar University · 2024</div></div>
+    <div class="edu-row"><div>B.Sc. in Computer Science and Engineering</div><div class="school">Daffodil International University · 2022</div></div>
+  </section>
+
+  <section id="contact">
+    <div class="contact-card">
+      <h2>Let's scope an engagement</h2>
+      <p>Open to Red Team operations, VAPT scoping calls, and offensive security consulting, based in Dhaka or fully remote.</p>
+      <a class="contact-btn" href="https://linkedin.com/in/asadevan" target="_blank" rel="noopener">Connect on LinkedIn</a>
+      <div class="contact-note">Direct contact channels shared once an engagement is scoped.</div>
+    </div>
+  </section>
+
+  <footer>Asad Ullah Evan · Dhaka, Bangladesh</footer>
+
+</div>
+
+</body>
+</html>
